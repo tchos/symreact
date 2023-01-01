@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\InvoiceRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
@@ -15,16 +14,17 @@ class Invoice
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?float $amount = null;
+    private ?float $amout = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $sentAt = null;
+    #[ORM\Column]
+    private ?\DateTime $sentAt = null;
 
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
     #[ORM\ManyToOne(inversedBy: 'invoices')]
-    private ?Customer $leCustomer = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Customer $customer = null;
 
     #[ORM\Column]
     private ?int $chrono = null;
@@ -34,24 +34,24 @@ class Invoice
         return $this->id;
     }
 
-    public function getAmount(): ?float
+    public function getAmout(): ?float
     {
-        return $this->amount;
+        return $this->amout;
     }
 
-    public function setAmount(float $amount): self
+    public function setAmout(float $amout): self
     {
-        $this->amount = $amount;
+        $this->amout = $amout;
 
         return $this;
     }
 
-    public function getSentAt(): ?\DateTimeInterface
+    public function getSentAt(): ?\DateTime
     {
         return $this->sentAt;
     }
 
-    public function setSentAt(\DateTimeInterface $sentAt): self
+    public function setSentAt(\DateTime $sentAt): self
     {
         $this->sentAt = $sentAt;
 
@@ -70,14 +70,14 @@ class Invoice
         return $this;
     }
 
-    public function getLeCustomer(): ?Customer
+    public function getCustomer(): ?Customer
     {
-        return $this->leCustomer;
+        return $this->customer;
     }
 
-    public function setLeCustomer(?Customer $leCustomer): self
+    public function setCustomer(?Customer $customer): self
     {
-        $this->leCustomer = $leCustomer;
+        $this->customer = $customer;
 
         return $this;
     }

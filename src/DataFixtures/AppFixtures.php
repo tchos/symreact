@@ -4,11 +4,12 @@ namespace App\DataFixtures;
 
 use App\Entity\Customer;
 use App\Entity\Invoice;
-use App\Entity\Utilisateur;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 
 class AppFixtures extends Fixture
 {
@@ -26,10 +27,10 @@ class AppFixtures extends Fixture
         // $product = new Product();
         // $manager->persist($product);
         $faker = Factory::create('fr_FR');
-        $chrono = 1;
 
-        for ($u = 0; $u < 10; $u++) {
-            $user = new Utilisateur();
+        // On va créer 10 users fictifs
+        for($u = 0; $u < 10; $u++){
+            $user = new User();
 
             // On reinitialise les numeros de facture pour chaque nouvel user
             $chrono = 1;
@@ -44,33 +45,32 @@ class AppFixtures extends Fixture
             $manager->persist($user);
 
             // On va créer entre 5 et 20 clients fictifs rattachés à un user
-            for($c = 0; $c < mt_rand(5,20); $c++) {
+            for($c = 0; $c < mt_rand(5,20); $c++){
                 $customer = new Customer();
                 $customer->setFirstName($faker->firstName())
                     ->setLastName($faker->lastName)
                     ->setEmail($faker->email)
                     ->setCompany($faker->company)
-                    ->setCustomerUtilisateur($user)
-                    ;
+                    ->setUtilisateur($user)
+                ;
                 $manager->persist($customer);
 
                 /** Chaque client aura entre 3 et 10 factures
                  * chaque facture pourrait avoir 3 Etats: SENT, PAID, CANCELLED.
                  * */
-                for ($i = 0; $i < mt_rand(3, 10); $i++) {
+                for($i = 0; $i < mt_rand(3,10); $i++) {
                     $invoice = new Invoice();
-                    $invoice->setAmount($faker->randomFloat(2, 250, 5000))
+                    $invoice->setAmout($faker->randomFloat(2, 250, 5000))
                         ->setSentAt($faker->dateTimeBetween('-6 months'))
                         ->setStatus($faker->randomElement(['SENT', 'PAID', 'CANCELLED']))
-                        ->setLeCustomer($customer)
-                        ->setChrono($chrono);
-
+                        ->setCustomer($customer)
+                        ->setChrono($chrono)
+                    ;
                     $chrono++;
                     $manager->persist($invoice);
                 }
             }
         }
-
         $manager->flush();
     }
 }

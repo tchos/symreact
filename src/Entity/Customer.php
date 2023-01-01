@@ -2,14 +2,12 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
-#[ApiResource]
 class Customer
 {
     #[ORM\Id]
@@ -29,11 +27,11 @@ class Customer
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $company = null;
 
-    #[ORM\OneToMany(mappedBy: 'leCustomer', targetEntity: Invoice::class)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
     private Collection $invoices;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
-    private ?Utilisateur $customerUtilisateur = null;
+    private ?User $utilisateur = null;
 
     public function __construct()
     {
@@ -105,7 +103,7 @@ class Customer
     {
         if (!$this->invoices->contains($invoice)) {
             $this->invoices->add($invoice);
-            $invoice->setLeCustomer($this);
+            $invoice->setCustomer($this);
         }
 
         return $this;
@@ -115,22 +113,22 @@ class Customer
     {
         if ($this->invoices->removeElement($invoice)) {
             // set the owning side to null (unless already changed)
-            if ($invoice->getLeCustomer() === $this) {
-                $invoice->setLeCustomer(null);
+            if ($invoice->getCustomer() === $this) {
+                $invoice->setCustomer(null);
             }
         }
 
         return $this;
     }
 
-    public function getCustomerUtilisateur(): ?Utilisateur
+    public function getUtilisateur(): ?User
     {
-        return $this->customerUtilisateur;
+        return $this->utilisateur;
     }
 
-    public function setCustomerUtilisateur(?Utilisateur $customerUtilisateur): self
+    public function setUtilisateur(?User $utilisateur): self
     {
-        $this->customerUtilisateur = $customerUtilisateur;
+        $this->utilisateur = $utilisateur;
 
         return $this;
     }
